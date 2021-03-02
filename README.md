@@ -1,34 +1,219 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next Template
 
-## Getting Started
+Template para aplicações Nextjs
 
-First, run the development server:
+> Links uteis
 
-```bash
-npm run dev
-# or
-yarn dev
+- https://github.com/vercel/next.js/tree/canary/examples/with-styled-components
+
+> Como Criar este Template
+
+- Iniciando o projeto
+
+```
+$ yarn create next-app my-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Configurando o Typescript
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+  - mude a extensão dos arquivos na pasta pages de .js para .ts ou .tsx
+  - instale as seguintes dependencias
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+    - ```
+        $ yarn add --dev typescript @types/react @types/node
+      ```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+  - agora inicie o servidor em modo de desenvolvimento
 
-## Learn More
+    - ```
+        $ yarn dev
+      ```
 
-To learn more about Next.js, take a look at the following resources:
+  - o arquivo tsconfig.json será criado automaticamente
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Instalando e configurando o eslint
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+  - instale a seguinte dependencia
 
-## Deploy on Vercel
+    - ```
+        $ yarn add --dev eslint
+      ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  - inicie a configuração do eslint com...
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    - ```
+        $ yarn eslint --init
+      ```
+
+  - instale essas dependencias
+
+    - ```
+        $ yarn add --dev eslint-plugin-react@latest @typescript-eslint/eslint-plugin@latest eslint-config-standard@latest eslint@^7.12.1 eslint-plugin-import@^2.22.1 eslint-plugin-node@^11.1.0 eslint-plugin-promise@^4.2.1 @typescript-eslint/parser@latest
+      ```
+
+- Instalando o prettier
+
+  - instale as seguintes dependencias
+
+    - ```
+        $ yarn add --dev prettier eslint-plugin-prettier eslint-config-prettier
+      ```
+
+- Alterando algumas configurações do eslint
+
+  - no arquivo .eslintrc.json adicione o jest que usaremos mais para frente
+
+    - ```
+        //.eslintrc.json
+        "env": {
+          "jest": true
+        }
+      ```
+
+  - em extends adicione os seguintes plugins
+    - ```
+        //.eslintrc.json
+        "extends": [
+          "plugin:@typescript-eslint/recommended",
+          "prettier/@typescript-eslint",
+          "prettier/standart",
+          "prettier/react"
+        ]
+      ```
+  - em plugins adicione o prettier
+    - ```
+        //.eslintrc.json
+        "plugins": [
+          "prettier"
+        ]
+      ```
+  - e agora vamos colocar algumas regras
+
+    - ```
+        //.eslintrc.json
+        "rules": {
+          "prettier/prettier": "errror", // vai sinalizar qualquer erro que seja derivado do prettier
+          "space-before-function-paren": "off", // Remove necessidade de espaço depois do parentesis da funcao
+          "react/prop-types": "off" // desliga a checagem de tipos do eslint(não do typescript)
+        }
+      ```
+
+- Inserindo as tipagens
+
+  - Alterando a tipagem do \_app
+
+    - ```
+        //_app.tsx
+        import { AppProps } from 'next/app'
+
+            const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
+                return <Component {...pageProps} />
+            }
+
+            export default MyApp
+      ```
+
+  - Alterando a tipagem do home
+
+    - ```
+        // home.tsx
+        const Home: React.FC = () => {
+          return <div>Hello World</div>
+        }
+
+          export default Home
+      ```
+
+- Configurando o editorconfig
+
+  - clique com o botao direito na regiao de pastas e selecione "Generate .editorconfig"
+
+    - ```
+      //.editorconfig
+      root = true
+
+      [*]
+      indent_style = space
+      indent_size = 2
+      end_of_line = lf
+      charset = utf-8
+      trim_trailing_whitespace = true
+      insert_final_newline = true
+      ```
+
+- Instalando e configurando o styled components
+
+  - instale as seguintes dependencias
+
+    - ```
+        $ yarn add styled styled-components react-is
+      ```
+    - ```
+        $ yarn add --dev babel-plugin-styled-components @types/styled-components
+      ```
+
+  - crie um arquivo de configuração do babel
+
+    - ```
+      //.babelrc
+      {
+        "presets": ["next/babel"],
+        "plugins": [["styled-components", { "ssr": true }]]
+      }
+      ```
+
+  - crie o arquivo \_document na pasta peges
+
+    - ```
+      // _document.tsx
+      import Document, {
+        DocumentContext,
+        DocumentInitialProps,
+        Html,
+        Head,
+        Main,
+        NextScript
+      } from 'next/document'
+      import { ServerStyleSheet } from 'styled-components'
+
+      export default class MyDocument extends Document {
+        static async getInitialProps(
+          ctx: DocumentContext
+        ): Promise<DocumentInitialProps> {
+          const sheet = new ServerStyleSheet()
+          const originalRenderPage = ctx.renderPage
+
+          try {
+            ctx.renderPage = () =>
+              originalRenderPage({
+                enhanceApp: App => props => sheet.collectStyles(<App {...props} />)
+              })
+
+            const initialProps = await Document.getInitialProps(ctx)
+            return {
+              ...initialProps,
+              styles: (
+                <>
+                  {initialProps.styles}
+                  {sheet.getStyleElement()}
+                </>
+              )
+            }
+          } finally {
+            sheet.seal()
+          }
+        }
+
+        render() {
+          return (
+            <Html>
+              <Head />
+              <body>
+                <Main />
+                <NextScript />
+              </body>
+            </Html>
+          )
+        }
+      }
+      ```
