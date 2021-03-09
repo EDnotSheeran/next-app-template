@@ -1,3 +1,5 @@
-import GlobalStyle from './Global'
+import Global from './Global'
 
-export { GlobalStyle }
+import GlobalStyle from './Global'
+export default GlobalStyle
+export * from './Global'

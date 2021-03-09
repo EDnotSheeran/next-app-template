@@ -217,3 +217,118 @@ $ yarn create next-app my-app
         }
       }
       ```
+
+- Configurando Autenticação
+
+  - instale o next-auth
+
+    - ```
+      $ yarn add next-auth
+      ```
+
+  - crie o arquivo api/auth/[...nextauth].js
+
+    - ```
+      // api/auth/[...nextauth].js
+      import NextAuth from 'next-auth'
+      import Providers from 'next-auth/providers'
+
+      export default (req, res) =>
+        NextAuth({
+          providers: [
+            Providers.GitHub({
+              clientId: process.env.GITHUB_CLIENT_ID,
+              clientSecret: process.env.GITHUB_CLIENT_SECRET
+            })
+          ],
+          debug: process.env.NODE_ENV === 'development',
+          secret: process.env.AUTH_SECRET,
+          jwt: {
+            secret: process.env.JWT_SECRET,
+
+          }
+        })
+      ```
+
+  - configure suas variaveis de ambiente a vontede
+  - se usar o github provider lembre se de criar um aplicacao Oauth no github
+
+    - ```
+      // .env.local
+      GITHUB_CLIENT_ID=""
+      GITHUB_CLIENT_SECRET=""
+      NEXTAUTH_URL="http://localhost:3000"
+      AUTH_SECRET=""
+      JWT_SECRET=""
+      ```
+
+  - na pagina home importe os metodos do client e já esta pronto para logar
+
+    - ```
+      // src/pages/index.ts
+      import { Container } from '@/components/Global'
+      import Head from 'next/head'
+      import { signIn, signOut, useSession } from 'next-auth/client'
+
+      const Home: React.FC = () => {
+        const [session, loading] = useSession()
+
+        return (
+          <Container>
+            <Head>
+              <title>Next Auth</title>
+            </Head>
+
+            <nav>
+              {!session ? (
+                <button onClick={() => signIn('github')}>Sign In with github</button>
+              ) : (
+                <>
+                  <span>{session.user.name}</span>
+                  {session.user.image && <img src={session.user.image} width="50" />}
+                  <button onClick={() => signOut()}>Sign Out</button>
+                </>
+              )}
+            </nav>
+          </Container>
+        )
+      }
+
+      export default Home
+      ```
+
+  - No \_app envolva tudo com o provider para mais performance e cache de sessão
+
+    - ```
+      import { Provider as AuthProvider } from 'next-auth/client'
+      <AuthProvider session={pageProps.session}>
+      ```
+
+  - Instalando o Prisma
+
+    - ```
+      $ yarn add prisma
+      $ yarn prima init
+      ```
+
+  - No arquivo env coloque a url do banco
+  - ```
+      //.env
+      DATABASE_URL="postgresql://user:password@localhost:5432/next-auth?schema=public"
+    ```
+
+  - no site do next-auth copie todo o schema e rode no banco de dados
+  - e entao rode o intrispect para criar um schema com base no banco
+    - ```
+      $ yarn prima introspect
+      ```
+  - mude a primeira letra dos models pra uppercase
+  - gere o cliente
+    - ```
+      $ yarn prisma generate
+      ```
+  - ele te informará como importar o prisma, deve ser mais ou menos asssim
+    - ```
+      import { PrismaClient } from '@prisma/client'
+      const prisma = new PrismaClient()
+      ```
