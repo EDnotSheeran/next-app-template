@@ -36,9 +36,7 @@ const Home: React.FC<ToggleTheme> = ({ toggleTheme }) => {
         {!session ? (
           <>
             <h1>{content}</h1>
-            <button onClick={() => signIn('github')}>
-              Sign In with github
-            </button>
+            <button onClick={() => signIn('local')}>Sign In with github</button>
           </>
         ) : (
           <>
