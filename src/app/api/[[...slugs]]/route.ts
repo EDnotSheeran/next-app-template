@@ -1,6 +1,8 @@
+import openapi from "@elysiajs/openapi";
 import { Elysia, t } from "elysia";
 
 const app = new Elysia({ prefix: "/api" })
+  .use(openapi())
   .get("/", "Hello Nextjs")
   .post("/", ({ body }) => body, {
     body: t.Object({
