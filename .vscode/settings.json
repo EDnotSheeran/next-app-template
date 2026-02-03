@@ -15,5 +15,25 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "material-icon-theme.folders.customClones": [
+    {
+      "name": "users-admin",
+      "base": "admin",
+      "color": "orange-500",
+      "lightColor": "light-green-700",
+      "folderNames": ["(protected)"],
+      "rootFolderNames": ["app"]
+    },
+    {
+      "name": "public-pages",
+      "base": "public",
+      "color": "cyan-400",
+      "folderNames": ["(public)"],
+      "rootFolderNames": ["app"]
+    }
+  ]
 }

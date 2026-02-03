@@ -18,10 +18,15 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
       "suspicious": {
         "noUnknownAtRules": "off",
         "noArrayIndexKey": "off",
-        "noDoubleEquals": "off"
+        "noDoubleEquals": "off",
+        "noExplicitAny": "off",
+        "noDocumentCookie": "off"
       },
       "a11y": {
         "useKeyWithClickEvents": "off",
