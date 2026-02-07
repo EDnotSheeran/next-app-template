@@ -1,10 +1,12 @@
 # Next App Template
+![Next App Template](./public/cover.png)
 
 A modern, opinionated **Next.js + API** template designed to build scalable applications fast.
 
 This template combines **Next.js App Router**, an internal **typed API**, modular backend architecture, authentication, database access, and a clean frontend structure — all ready to be reused across multiple projects.
 
 >⚡ This template is powered by **Bun** for faster installs and execution.
+
 
 ---
 
