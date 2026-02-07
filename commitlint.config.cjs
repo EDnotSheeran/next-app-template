@@ -18,6 +18,6 @@ module.exports = {
         "revert",
       ],
     ],
-    "scope-enum": [2, "never", ["api", "web", "shared", "root", "docs", "ci"]],
+    "scope-enum": [2, "never"],
   },
 };
