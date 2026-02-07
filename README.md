@@ -67,6 +67,9 @@ NEXT_PUBLIC_URL=http://localhost:3000
 BETTER_AUTH_URL=http://localhost:3000
 BETTER_AUTH_SECRET=your-secret-key
 ```
+> [!TIP]
+>
+> There's a `docker-compose.yml` file in the project root if you need to run the database using Docker.
 
 ### 3. Run the development server
 
