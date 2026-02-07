@@ -69,6 +69,48 @@ modules/<module-name>/
 
 ---
 
+## 📝 Commit Message Conventions
+
+This project follows **Conventional Commits**, enforced by **commitlint**.
+
+All commit messages must follow this format:
+
+```txt
+<type>(optional scope): <description>
+```
+
+### ✅ Allowed types
+
+* **feat**: A new feature
+* **fix**: A bug fix
+* **docs**: Documentation only changes
+* **style**: Code style changes (formatting, missing semicolons, etc)
+* **refactor**: Code refactoring without behavior change
+* **perf**: Performance improvements
+* **test**: Adding or fixing tests
+* **build**: Build system or dependency changes
+* **ci**: CI configuration changes
+* **chore**: Maintenance tasks
+* **revert**: Reverting a previous commit
+
+### 📌 Examples
+
+```bash
+feat(auth): add role-based access control
+fix(api): handle missing database connection
+docs(readme): update setup instructions
+refactor(users): simplify service logic
+```
+
+### 🚫 Rules
+
+* Use **lowercase** for type and scope
+* Keep the description **short and imperative**
+* Do not end the description with a period
+* One commit = one logical change
+
+---
+
 ## 🔍 Pull Requests
 
 Before opening a PR:
