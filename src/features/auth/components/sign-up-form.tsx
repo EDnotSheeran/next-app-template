@@ -1,8 +1,8 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,39 +18,51 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/auth/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-const signInSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
+const signUpSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters long"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+  });
 
-type SignInSchema = z.infer<typeof signInSchema>;
+type SignUpSchema = z.infer<typeof signUpSchema>;
 
-export function SignInForm({
+export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { handleSubmit, formState, control } = useForm<SignInSchema>({
-    resolver: zodResolver(signInSchema),
+  const { handleSubmit, formState, control } = useForm<SignUpSchema>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  async function handleSignIn(data: SignInSchema) {
-    await authClient.signIn.email(
+  async function handleSignUp(data: SignUpSchema) {
+    await authClient.signUp.email(
       {
+        name: data.name,
         email: data.email,
         password: data.password,
-        rememberMe: false,
         callbackURL: "/dashboard",
       },
       {
         onError: (context) => {
-          toast.error(`Sign-in failed: ${context.error.message}`);
+          toast.error(`Sign-up failed: ${context.error.message}`);
+        },
+        onSuccess: () => {
+          redirect("/dashboard");
         },
       },
     );
@@ -60,14 +72,38 @@ export function SignInForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" onSubmit={handleSubmit(handleSignIn)}>
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(handleSignUp)}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-muted-foreground text-balance">
-                  Login to your Acme Inc account
+                <h1 className="text-2xl font-bold">Create your account</h1>
+                <p className="text-muted-foreground text-sm text-balance">
+                  Enter your email below to create your account
                 </p>
               </div>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="name">Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id="name"
+                      type="text"
+                      placeholder="John Doe"
+                      required
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldDescription>
+                      We&apos;ll use this to contact you. We will not share your
+                      name with anyone else.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
               <Controller
                 name="email"
                 control={control}
@@ -75,49 +111,69 @@ export function SignInForm({
                   <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
                     <Input
-                      {...field}
                       id="email"
                       type="email"
                       placeholder="m@example.com"
                       required
                       aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="password"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <div className="flex items-center">
-                      <FieldLabel htmlFor="password">Password</FieldLabel>
-                      <Link
-                        href="#"
-                        className="ml-auto text-sm underline-offset-2 hover:underline"
-                      >
-                        Forgot your password?
-                      </Link>
-                    </div>
-                    <Input
                       {...field}
-                      id="password"
-                      type="password"
-                      required
-                      aria-invalid={fieldState.invalid}
                     />
+                    <FieldDescription>
+                      We&apos;ll use this to contact you. We will not share your
+                      email with anyone else.
+                    </FieldDescription>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
                   </Field>
                 )}
               />
+              <Field className="grid grid-cols-2 gap-4">
+                <Controller
+                  name="password"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <Input
+                        id="password"
+                        type="password"
+                        required
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="confirmPassword"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel htmlFor="confirm-password">
+                        Confirm Password
+                      </FieldLabel>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        required
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </Field>
               <Field>
                 <Button type="submit" disabled={formState.isSubmitting}>
-                  Login
+                  Create Account
                   {formState.isSubmitting && (
                     <Spinner data-icon="inline-start" />
                   )}
@@ -131,11 +187,12 @@ export function SignInForm({
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <title>Google</title>
                     <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0
+                      6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Google</span>
+                  <span className="sr-only">Sign up with Google</span>
                 </Button>
                 <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -145,12 +202,12 @@ export function SignInForm({
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="sr-only">Login with Github</span>
+                  <span className="sr-only">Sign up with Github</span>
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Don&apos;t have an account?{" "}
-                <Link href="/auth/sign-up">Sign up</Link>
+                Already have an account?{" "}
+                <Link href="/auth/sign-in">Sign in</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
@@ -160,7 +217,6 @@ export function SignInForm({
               alt="Image"
               width={100}
               height={100}
-              loading="eager"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
           </div>

@@ -1,15 +1,22 @@
 import { Elysia } from "elysia";
 
-import { registerPlugins } from "@/api/plugins";
-import { registerRoutes } from "@/api/routes";
+import { registerModules } from "@/api/modules";
+import { registerMiddlewares } from "@/api/shared/middlewares";
+import { registerPlugins } from "@/api/shared/plugins";
 
-const app = new Elysia({ prefix: "/api" });
+export async function createApiApp() {
+  const app = new Elysia({ prefix: "/api" });
 
-await registerPlugins(app);
-await registerRoutes(app);
+  // plugins
+  await registerPlugins(app);
 
-app.get("/", () => ({ status: "ok" }));
+  // middlewares
+  registerMiddlewares(app);
 
-export { app };
+  // routes
+  registerModules(app);
 
-export type Api = typeof app;
+  return app;
+}
+
+export type Api = Awaited<ReturnType<typeof createApiApp>>;
