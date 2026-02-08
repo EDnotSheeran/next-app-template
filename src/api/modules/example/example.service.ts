@@ -3,7 +3,8 @@
  * This file contains business logic and can be reused by other modules.
  */
 
-import { NotFoundError } from "elysia";
+import { NotFoundError } from "elysia/error";
+import type { i18n } from "i18next";
 
 type Example = {
   id: string;
@@ -19,11 +20,12 @@ export const exampleService = {
     store.clear();
   },
 
-  getById(id: string) {
+  getById(id: string, t: i18n["t"]) {
     const example = store.get(id);
 
     if (!example) {
-      throw new NotFoundError(`Example with id '${id}' not found`);
+      // Throw localized error if i18n context provided
+      throw new NotFoundError(t("example.notFound", { id }));
     }
 
     return example;
@@ -38,8 +40,8 @@ export const exampleService = {
     return example;
   },
 
-  update(id: string, data: Partial<{ message: string }>) {
-    const existing = this.getById(id);
+  update(id: string, data: Partial<{ message: string }>, t: i18n["t"]) {
+    const existing = this.getById(id, t);
 
     const updated = { ...existing, ...data };
     store.set(id, updated);
@@ -47,8 +49,8 @@ export const exampleService = {
     return updated;
   },
 
-  delete(id: string) {
-    this.getById(id);
+  delete(id: string, t: i18n["t"]) {
+    this.getById(id, t);
     store.delete(id);
   },
 };

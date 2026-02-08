@@ -16,6 +16,7 @@ import { exampleService } from "./example.service";
  * - typed response
  * - auth requirement
  * - OpenAPI metadata
+ * - i18n support
  */
 
 const hidddenRoute = false;
@@ -23,7 +24,7 @@ const hidddenRoute = false;
 export const exampleRoutes = new Elysia({ prefix: "/example" })
 
   // GET
-  .get("/:id", ({ params }) => exampleService.getById(params.id), {
+  .get("/:id", ({ params, t }) => exampleService.getById(params.id, t), {
     auth: true,
     params: exampleParamsSchema,
     response: {
@@ -40,7 +41,7 @@ export const exampleRoutes = new Elysia({ prefix: "/example" })
   })
 
   // POST
-  .post("/", ({ body }) => exampleService.create(body), {
+  .post("/", ({ body, t }) => exampleService.create(body, t), {
     auth: true,
     body: exampleCreateSchema,
     response: {
@@ -57,48 +58,56 @@ export const exampleRoutes = new Elysia({ prefix: "/example" })
   })
 
   // PUT
-  .put("/:id", ({ params, body }) => exampleService.update(params.id, body), {
-    auth: true,
-    params: exampleParamsSchema,
-    body: exampleCreateSchema,
-    response: {
-      200: exampleResponseSchema,
-      400: validationErrorSchema,
-      404: notFoundResponseSchema,
+  .put(
+    "/:id",
+    ({ params, body, t }) => exampleService.update(params.id, body, t),
+    {
+      auth: true,
+      params: exampleParamsSchema,
+      body: exampleCreateSchema,
+      response: {
+        200: exampleResponseSchema,
+        400: validationErrorSchema,
+        404: notFoundResponseSchema,
+      },
+      detail: {
+        hide: hidddenRoute,
+        summary: "Replace example",
+        description:
+          "Replaces the example with the specified ID using the provided data",
+      },
+      tags: ["Example"],
     },
-    detail: {
-      hide: hidddenRoute,
-      summary: "Replace example",
-      description:
-        "Replaces the example with the specified ID using the provided data",
-    },
-    tags: ["Example"],
-  })
+  )
 
   // PATCH
-  .patch("/:id", ({ params, body }) => exampleService.update(params.id, body), {
-    auth: true,
-    params: exampleParamsSchema,
-    body: exampleUpdateSchema,
-    response: {
-      200: exampleResponseSchema,
-      400: validationErrorSchema,
-      404: notFoundResponseSchema,
+  .patch(
+    "/:id",
+    ({ params, body, t }) => exampleService.update(params.id, body, t),
+    {
+      auth: true,
+      params: exampleParamsSchema,
+      body: exampleUpdateSchema,
+      response: {
+        200: exampleResponseSchema,
+        400: validationErrorSchema,
+        404: notFoundResponseSchema,
+      },
+      detail: {
+        hide: hidddenRoute,
+        summary: "Update example",
+        description:
+          "Updates the example with the specified ID using the provided data",
+      },
+      tags: ["Example"],
     },
-    detail: {
-      hide: hidddenRoute,
-      summary: "Update example",
-      description:
-        "Updates the example with the specified ID using the provided data",
-    },
-    tags: ["Example"],
-  })
+  )
 
   // DELETE
   .delete(
     "/:id",
-    ({ params }) => {
-      exampleService.delete(params.id);
+    ({ params, t }) => {
+      exampleService.delete(params.id, t);
       return { success: true };
     },
     {
