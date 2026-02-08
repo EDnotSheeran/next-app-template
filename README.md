@@ -6,7 +6,7 @@ A modern, opinionated **Next.js + API** template designed to build scalable appl
 This template combines **Next.js App Router**, an internal **typed API**, modular backend architecture, authentication, database access, and a clean frontend structure — all ready to be reused across multiple projects.
 
 >⚡ This template is powered by **Bun** for faster installs and execution.
-
+> 🤖 also includes Copilot instructions to ensure consistent code generation.
 
 ---
 
