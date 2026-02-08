@@ -1,25 +1,54 @@
-import { Elysia, t } from "elysia";
+/**
+ * Example service
+ * This file contains business logic and can be reused by other modules.
+ */
 
-export const exampleRoutes = new Elysia().get(
-  "/example/:id",
-  async ({ params }) => {
-    return { message: "This is an example route", id: params.id };
+import { NotFoundError } from "elysia";
+
+type Example = {
+  id: string;
+  message: string;
+};
+
+const store = new Map<string, Example>();
+
+export const exampleService = {
+  // Reset internal store before each test
+  // (only needed because this is an in-memory example)
+  __reset() {
+    store.clear();
   },
-  {
-    auth: true,
-    params: t.Object({
-      id: t.String(),
-    }),
-    response: {
-      200: t.Object({
-        id: t.String(),
-        message: t.String(),
-      }),
-    },
-    detail: {
-      summary: "Get Example by ID",
-      description: "Retrieve example information using their param ID.",
-    },
-    tags: ["Example"],
+
+  getById(id: string) {
+    const example = store.get(id);
+
+    if (!example) {
+      throw new NotFoundError(`Example with id '${id}' not found`);
+    }
+
+    return example;
   },
-);
+
+  create(data: { message: string }) {
+    const id = crypto.randomUUID();
+
+    const example = { id, message: data.message };
+    store.set(id, example);
+
+    return example;
+  },
+
+  update(id: string, data: Partial<{ message: string }>) {
+    const existing = this.getById(id);
+
+    const updated = { ...existing, ...data };
+    store.set(id, updated);
+
+    return updated;
+  },
+
+  delete(id: string) {
+    this.getById(id);
+    store.delete(id);
+  },
+};

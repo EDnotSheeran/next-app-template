@@ -35,5 +35,8 @@
       "folderNames": ["(public)"],
       "rootFolderNames": ["app"]
     }
-  ]
+  ],
+  "material-icon-theme.files.associations": {
+    "*.schema.ts": "scheme"
+  }
 }

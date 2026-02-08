@@ -6,6 +6,11 @@ export async function openApiPlugin() {
     documentation: {
       components: await OpenAPI.components,
       paths: await OpenAPI.getPaths(),
+      info: {
+        version: "1.0.0",
+        title: "Next App Template API",
+        description: "API documentation for Next App Template",
+      },
     },
   });
 }
