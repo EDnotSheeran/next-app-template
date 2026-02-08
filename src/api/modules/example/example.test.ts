@@ -1,4 +1,4 @@
-import { NotFoundError } from "elysia";
+import { NotFoundError } from "elysia/error";
 import { beforeEach, describe, expect, it } from "vitest";
 import { exampleService } from "./example.service";
 

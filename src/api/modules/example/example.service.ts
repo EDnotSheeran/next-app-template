@@ -4,7 +4,6 @@
  */
 
 import { NotFoundError } from "elysia/error";
-import type { i18n } from "i18next";
 
 type Example = {
   id: string;
@@ -20,12 +19,12 @@ export const exampleService = {
     store.clear();
   },
 
-  getById(id: string, t: i18n["t"]) {
+  getById(id: string) {
     const example = store.get(id);
 
     if (!example) {
       // Throw localized error if i18n context provided
-      throw new NotFoundError(t("example.notFound", { id }));
+      throw new NotFoundError("example.notFound");
     }
 
     return example;
@@ -40,8 +39,8 @@ export const exampleService = {
     return example;
   },
 
-  update(id: string, data: Partial<{ message: string }>, t: i18n["t"]) {
-    const existing = this.getById(id, t);
+  update(id: string, data: Partial<{ message: string }>) {
+    const existing = this.getById(id);
 
     const updated = { ...existing, ...data };
     store.set(id, updated);
@@ -49,8 +48,8 @@ export const exampleService = {
     return updated;
   },
 
-  delete(id: string, t: i18n["t"]) {
-    this.getById(id, t);
+  delete(id: string) {
+    this.getById(id);
     store.delete(id);
   },
 };

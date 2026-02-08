@@ -1,5 +1,15 @@
 export const pt = {
   translation: {
-    "example.notFound": "Não foi encontrado um exemplo com o ID '{{id}}'",
+    error: {
+      unauthorized: "Não autorizado",
+    },
+    example: {
+      notFound: "Exemplo não encontrado",
+    },
+    validation: {
+      uuid: "O campo '{{field}}' deve ser um UUID válido.",
+      minLength: "O campo '{{field}}' deve ter no mínimo {{min}} caracteres.",
+      maxLength: "O campo '{{field}}' deve ter no máximo {{max}} caracteres.",
+    },
   },
 };
